@@ -135,8 +135,9 @@ def temporal_agnes(stamps, features, classes, metric='euclidean', linkage='avera
     return output_classes, true_num, pseudo_num, 0
 
 
+# useless function
 def agglomerative_clustering(stamps, features, classes, metric='euclidean', tol=1e-4):
-    """ agglomerative clustering
+    """ agglomerative clustering (useless function)
 
     Args:
         stamps (array): an 1-D array containing all timestamp index
