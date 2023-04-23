@@ -22,7 +22,7 @@ pip install scikit-learn
 
 ## Prepare Data
 * Download the three datasets, which contains the features and the ground truth labels. (~30GB) (try to download it from [here](https://zenodo.org/record/3625992#.Xiv9jGhKhPY)))
-* Extract it in the folder `data/`.
+* Extract the compressed file to the `data/` folder.
 * The three `.npy` files in the folder `data/` are the timestamp annotations provided by [Li et al.](https://github.com/ZheLi2020/TimestampActionSeg).
 
 ## Pseudo-Label Ensembling (PLE)
