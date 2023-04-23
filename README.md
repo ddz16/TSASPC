@@ -28,12 +28,16 @@ pip install scikit-learn
 ## Pseudo-Label Ensembling (PLE)
 Before training, we regard PLE as a pre-processing step since it relies on only the visual features of frames. You can run the following commands to generate pseudo-label sequences by the PLE algorithm for all videos in the 50salads dataset:
 ```
-python generate_pseudo.py --dataset 50salads --metric euclidean --feature 1024
-python generate_pseudo.py --dataset 50salads --metric euclidean --feature 2048
+python generate_pseudo.py --dataset 50salads --metric euclidean --feature 1024   # RGB features
+python generate_pseudo.py --dataset 50salads --metric euclidean --feature 2048   # optical flow features
 python intersection_pseudo.py --dataset 50salads
 ```
 Afterwards, you can find the generated pseudo-label sequences in the folder `data/I3D_merge/50salads/`, and the console will also output the evaluation metrics for the pseudo-label sequences: labeling rate and accuracy of pseudo-labels.
-
+```
+label rate: 0.5117809793880469
+label acc: 0.9549147886799857
+```
+You can also use above commands (change the `--dataset` argument) to generate pseudo-label sequences for other two datasets.
 
 ## Iterative Clustering (IC)
 After PLE, you can train the segmentation model with the IC algorithm.
