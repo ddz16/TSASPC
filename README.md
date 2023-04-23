@@ -23,7 +23,7 @@ pip install scikit-learn
 ## Prepare Data
 * Download the three datasets, which contains the features and the ground truth labels. (~30GB) (try to download it from [here](https://zenodo.org/record/3625992#.Xiv9jGhKhPY)))
 * Extract it in the folder `data/`.
-* The three `.npy` files in the folder `data/` are the timestamp annotations provided by [Li et al.](https://github.com/ZheLi2020/TimestampActionSeg). Put each one in corresponding ground truth folder. For example, `data/breakfast/groundTruth/breakfast_annotation_all.npy` for Breakfast dataset.
+* The three `.npy` files in the folder `data/` are the timestamp annotations provided by [Li et al.](https://github.com/ZheLi2020/TimestampActionSeg).
 
 ## Pseudo-Label Ensembling (PLE)
 Before training, we regard PLE as a pre-processing step since it relies on only the visual features of frames. You can run the following commands to generate pseudo-label sequences by the PLE algorithm for all videos in the 50salads dataset:
