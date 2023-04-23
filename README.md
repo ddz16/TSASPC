@@ -48,7 +48,7 @@ where `DS` is `breakfast`, `50salads` or `gtea`, and `SP` is the split number (1
 * The output of evaluation is saved in `result/` folder as an excel file. 
 * The `models/` folder saves the trained model and the `results/` folder saves the predicted action labels of each video in test dataset.
 
-If you get error: `AttributeError: module 'distutils' has no attribute 'version'`, you can install a lower setuptools version:
+**If you get error: `AttributeError: module 'distutils' has no attribute 'version'`, you can install a lower version of setuptools:**
 ```
 pip uninstall setuptools
 pip install setuptools==59.5.0
