@@ -1,5 +1,6 @@
-# TSS-ActionSegmentation
- The PyTorch implementation of the paper "Timestamp-Supervised Action Segmentation from the Perspective of Clustering".
+# Timestamp-Supervised Action Segmentation from the Perspective of Clustering (TSASPC)
+
+This repository provides a PyTorch implementation of the paper [Timestamp-Supervised Action Segmentation from the Perspective of Clustering. (IJCAI 2023)](https://arxiv.org/abs/2212.11694)
 
 ## Environment
 
@@ -57,10 +58,10 @@ The model used in this paper is a refined MS-TCN model. Please refer to the pape
 ## Citation
 
 ```
-@article{du2022timestamp,
-  title={Timestamp-Supervised Action Segmentation in the Perspective of Clustering},
+@inproceedings{du2023timestamp,
+  title={Timestamp-Supervised Action Segmentation from the Perspective of Clustering},
   author={Du, Dazhao and Li, Enhan and Si, Lingyu and Xu, Fanjiang and Sun, Fuchun},
-  journal={arXiv preprint arXiv:2212.11694},
-  year={2022}
+  booktitle={IJCAI},
+  year={2023}
 }
 ```
