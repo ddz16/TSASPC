@@ -48,6 +48,11 @@ where `DS` is `breakfast`, `50salads` or `gtea`, and `SP` is the split number (1
 * The output of evaluation is saved in `result/` folder as an excel file. 
 * The `models/` folder saves the trained model and the `results/` folder saves the predicted action labels of each video in test dataset.
 
+If you get error: `AttributeError: module 'distutils' has no attribute 'version'`, you can install a lower setuptools version:
+```
+pip uninstall setuptools
+pip install setuptools==59.5.0
+```
 ## Evaluation
 Normally we get the prediction and evaluation after training and do not have to run this independently. In case you want to test the saved model again by prediction and evaluation, please change the `time_data` in `main.py` and run:
 ```
