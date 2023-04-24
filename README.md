@@ -48,6 +48,17 @@ where `DS` is `breakfast`, `50salads` or `gtea`, and `SP` is the split number (1
 * The output of evaluation is saved in `result/` folder as an excel file. 
 * The `models/` folder saves the trained model and the `results/` folder saves the predicted action labels of each video in test dataset.
 
+Here is an example:
+```
+python main.py --action=train --dataset=50salads --split=2
+# F1@0.10: 77.8032
+# F1@0.25: 75.0572
+# F1@0.50: 64.0732
+# Edit: 68.2274
+# Acc: 79.3653
+```
+Please note that we follow [the protocol in MS-TCN++](https://github.com/sj-li/MS-TCN2/issues/2) when evaluating, which is to select the epoch number that can achieve the best average result for all the splits to report the performance.
+
 **If you get error: `AttributeError: module 'distutils' has no attribute 'version'`, you can install a lower version of setuptools:**
 ```
 pip uninstall setuptools
