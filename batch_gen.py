@@ -3,7 +3,6 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 import random
-from eval import plot_soft_labels
 
 
 class BatchGenerator(object):
@@ -18,9 +17,9 @@ class BatchGenerator(object):
         self.gt = {}
         self.confidence_mask = {}
         self.pseudo_path = pseudo_path
-
-        dataset_name = gt_path.split('/')[4]
-        self.random_index = np.load(gt_path + dataset_name + "_annotation_all.npy", allow_pickle=True).item()
+        dataset_name = gt_path.split('/')[-3]
+        assert dataset_name in ['50salads', 'breakfast', 'gtea']
+        self.random_index = np.load('./data/' + dataset_name + "_annotation_all.npy", allow_pickle=True).item()
 
     def reset(self, shuffle=False):
         self.index = 0
@@ -240,158 +239,6 @@ class BatchGenerator(object):
             assert len(bounds[i]) - 1 == len(stamp_labels[i])
 
         return boundary_target_tensor, bounds, stamp_labels, truth_label_total_num
-
-
-    def get_boundary_ple(self, batch_size, pred, all_left, all_right):
-        # This function is to generate pseudo labels
-
-        batch = self.list_of_examples[self.index - batch_size:self.index]
-        num_video, _, max_frames = pred.size()
-        boundary_target_tensor = torch.ones(num_video, max_frames, dtype=torch.long) * (-100)
-
-        bounds = []
-        stamp_labels = []
-        for b, vid in enumerate(batch):
-            single_idx = self.random_index[vid]
-            vid_gt = self.gt[vid]
-            features = pred[b]
-            boundary_target = np.ones(vid_gt.shape) * (-100)
-            boundary_target[:single_idx[0]] = vid_gt[single_idx[0]]  # frames before first single frame has same label
-            left_bound = [0]
-
-            # Forward to find action boundaries
-            for i in range(len(all_left[b])):
-                start = all_left[b][i]
-                end = all_right[b][i]
-                left_score = torch.zeros(end - start - 1, dtype=torch.float)
-                for t in range(start + 1, end):
-                    center_left = torch.mean(features[:, left_bound[-1]:t], dim=1)
-                    diff_left = features[:, start:t] - center_left.reshape(-1, 1)
-                    score_left = torch.mean(torch.norm(diff_left, dim=0))
-
-                    center_right = torch.mean(features[:, t:end], dim=1)
-                    diff_right = features[:, t:end] - center_right.reshape(-1, 1)
-                    score_right = torch.mean(torch.norm(diff_right, dim=0))
-
-                    left_score[t-start-1] = ((t-start) * score_left + (end - t) * score_right)/(end - start)
-
-                if end - start - 1 == 0:
-                    cur_bound = torch.tensor(start)
-                else:
-                    cur_bound = torch.argmin(left_score) + start + 1
-                left_bound.append(cur_bound.item())
-
-            # Backward to find action boundaries
-            right_bound = [vid_gt.shape[0]]
-            for i in range(len(all_left[b])-1, -1, -1):
-                start = all_left[b][i]
-                end = all_right[b][i]
-                right_score = torch.zeros(end - start - 1, dtype=torch.float)
-                for t in range(end - 1, start, -1):
-                    center_left = torch.mean(features[:, start:t], dim=1)
-                    diff_left = features[:, start:t] - center_left.reshape(-1, 1)
-                    score_left = torch.mean(torch.norm(diff_left, dim=0))
-
-                    center_right = torch.mean(features[:, t:right_bound[-1]], dim=1)
-                    diff_right = features[:, t:end] - center_right.reshape(-1, 1)
-                    score_right = torch.mean(torch.norm(diff_right, dim=0))
-
-                    right_score[t-start-1] = ((t-start) * score_left + (end - t) * score_right)/(end - start)
-
-                if end - start - 1 == 0:
-                    cur_bound = torch.tensor(start)
-                else:
-                    cur_bound = torch.argmin(right_score) + start + 1
-                right_bound.append(cur_bound.item())
-
-            # Average two action boundaries for same segment and generate pseudo labels
-            left_bound = left_bound[1:]
-            right_bound = right_bound[1:]
-            middle_bound_list = []
-            stamp_label = []
-            num_bound = len(left_bound)
-            for i in range(num_bound):
-                temp_left = left_bound[i]
-                temp_right = right_bound[num_bound - i - 1]
-                middle_bound = int((temp_left + temp_right)/2)
-                middle_bound_list.append(middle_bound)
-                boundary_target[single_idx[i]:middle_bound] = vid_gt[single_idx[i]]
-                boundary_target[middle_bound:single_idx[i + 1] + 1] = vid_gt[single_idx[i + 1]]
-                stamp_label.append(vid_gt[single_idx[i]])
-
-            boundary_target[single_idx[-1]:] = vid_gt[single_idx[-1]]  # frames after last single frame has same label
-            boundary_target_tensor[b, :vid_gt.shape[0]] = torch.from_numpy(boundary_target)
-            stamp_label.append(vid_gt[single_idx[-1]])
-            
-            middle_bound_list.insert(0, 0)
-            middle_bound_list.append(vid_gt.shape[0])
-            bounds.append(middle_bound_list)
-            stamp_labels.append(stamp_label)
-        
-        for i in range(len(bounds)):
-            assert len(bounds[i]) - 1 == len(stamp_labels[i])
-
-        return boundary_target_tensor, bounds, stamp_labels
-
-
-    def get_boundary_t2t(self, batch_size, pred):
-        # This function is to generate pseudo labels (timestamp)
-
-        batch = self.list_of_examples[self.index - batch_size:self.index]
-        num_video, _, max_frames = pred.size()
-        boundary_target_tensor = torch.ones(num_video, max_frames, dtype=torch.long) * (-100)
-
-        # print(batch_size)  # always 8 !!!!
-        # print(batch)  # last batch maybe < 8 !!!!! 
-
-        bounds = []
-        for b, vid in enumerate(batch):
-            single_idx = self.random_index[vid]
-            vid_gt = self.gt[vid]
-            features = pred[b]
-            boundary_target = np.ones(vid_gt.shape) * (-100)
-            boundary_target[:single_idx[0]] = vid_gt[single_idx[0]]  # frames before first single frame has same label
-            left_bound = []
-
-            # Forward to find action boundaries
-            for i in range(len(single_idx) - 1):
-                start = single_idx[i]
-                end = single_idx[i + 1] + 1
-                left_score = torch.zeros(end - start - 1, dtype=torch.float)
-                for t in range(start + 1, end):
-                    center_left = torch.mean(features[:, start:t], dim=1)
-                    diff_left = features[:, start:t] - center_left.reshape(-1, 1)
-                    score_left = torch.mean(torch.norm(diff_left, dim=0))
-
-                    center_right = torch.mean(features[:, t:end], dim=1)
-                    diff_right = features[:, t:end] - center_right.reshape(-1, 1)
-                    score_right = torch.mean(torch.norm(diff_right, dim=0))
-
-                    left_score[t-start-1] = ((t-start) * score_left + (end - t) * score_right)/(end - start)
-
-                cur_bound = torch.argmin(left_score) + start + 1
-                left_bound.append(cur_bound.item())
-
-            # Average two action boundaries for same segment and generate pseudo labels
-            num_bound = len(left_bound)
-            for i in range(num_bound):
-                temp_left = left_bound[i]
-                boundary_target[single_idx[i]:temp_left] = vid_gt[single_idx[i]]
-                boundary_target[temp_left:single_idx[i + 1] + 1] = vid_gt[single_idx[i + 1]]
-
-            boundary_target[single_idx[-1]:] = vid_gt[single_idx[-1]]  # frames after last single frame has same label
-
-            # # avoid producing segment whose length is 1, the min lenth is (1+1+1) = 3
-            # for i in range(len(single_idx)):
-            #     boundary_target[single_idx[i]-1:single_idx[i]+2] = vid_gt[single_idx[i]]
-
-            boundary_target_tensor[b, :vid_gt.shape[0]] = torch.from_numpy(boundary_target)
-            left_bound.insert(0, 0)
-            left_bound.append(vid_gt.shape[0])
-            bounds.append(left_bound)
-                
-        return boundary_target_tensor, bounds, None
-
 
 
     def get_boundary_lp(self, batch_size, pred, confs, left_indices_dic, right_indices_dic):
