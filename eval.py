@@ -277,3 +277,4 @@ def plot_pseudo_labels(save_path, num_classes, *labels):
 
     fig.clear()
     plt.close()
+    
