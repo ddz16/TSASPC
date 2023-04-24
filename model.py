@@ -7,7 +7,7 @@ from torch import optim
 import os
 import copy
 import numpy as np
-from eval import segment_bars_with_confidence, plot_rate
+from eval import segment_bars_with_confidence
 
 
 class MultiStageModel(nn.Module):
