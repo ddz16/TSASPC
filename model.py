@@ -208,8 +208,8 @@ class Trainer:
                     epoch, truth_num, label_num, total_num, truth_num / float(label_num), label_num / float(total_num)
                 ))
                 epoch_list.append(epoch)
-                truth_rate.append(np.float(truth_num / float(label_num)))
-                label_rate.append(np.float(label_num / float(total_num)))
+                truth_rate.append(float(truth_num / float(label_num)))
+                label_rate.append(float(label_num / float(total_num)))
 
 
     def predict(self, model_dir, results_dir, features_path, batch_gen_tst, epoch, actions_dict, device, sample_rate):
