@@ -21,7 +21,6 @@ torch.backends.cudnn.deterministic = True
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--action', default='train', help='two options: train or predict')
-parser.add_argument('--mode', default='1', help='[1:train,2:train_TemEns,3:train_TemEns_Plus]')
 parser.add_argument('--dataset', default="50salads", help='three dataset: breakfast, 50salads, gtea')
 parser.add_argument('--split', default='1')
 
