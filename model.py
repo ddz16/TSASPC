@@ -173,7 +173,6 @@ class Trainer:
                     if epoch <= start_epochs:
                         loss += self.ce(p.transpose(2, 1).contiguous().view(-1, self.num_classes), batch_boundary.view(-1))
                     else:
-                        # loss += 0.2 * self.DEC_loss(bounds, middle_pred, stamp_labels)  # 权重要改为1试试
                         loss += self.ce(p.transpose(2, 1).contiguous().view(-1, self.num_classes), batch_boundary.view(-1))
                         # loss += torch.sum(self.ce_soft(p, batch_boundary) * mask[:, 0, :]) / torch.sum(mask[:, 0, :])
                         # print((torch.sum(self.ce_soft(p, batch_boundary) * p_mask[:, 0, :]) / torch.sum(p_mask[:, 0, :])).item())
