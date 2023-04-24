@@ -277,31 +277,3 @@ def plot_pseudo_labels(save_path, num_classes, *labels):
 
     fig.clear()
     plt.close()
-
-
-def plot_rate(save_path, epoch, *rates):
-    fig = plt.figure()
-    
-    plt.xlabel("Epoch Number")
-    plt.ylabel("Accuracy")
-    # plt.ylim([50.0, 100.0]) 
-    # plt.xlim(epoch[0], epoch[-1])
-
-    for i, rate in enumerate(rates):
-        plt.plot(epoch, [each*100 for each in rate])
-    
-    plt.grid(False) 
-    ax=plt.gca()  #gca:get current 
-
-    # ax.spines['right'].set_linewidth('2.0')
-    # ax.spines['top'].set_linewidth('2.0')
-    # ax.spines['left'].set_linewidth('2.0')
-    # ax.spines['bottom'].set_linewidth('2.0')
-
-    if save_path is not None:
-        plt.savefig(save_path)
-    else:
-        plt.show()
-
-    fig.clear()
-    plt.close()
